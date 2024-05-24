@@ -156,17 +156,18 @@ async def scrape_all(mod):
 
 async def gather_players(mod):
     i = 0
-    dest = f"csvfiles/user_data_new/user_data_{mod}.csv"
-    overwrite = False
+    dest = f"csvfiles/user_data/user_data_{mod}.csv"
+    overwrite = True
     if overwrite: 
         line = ("UserID", 
                         "Username",
                         "GlobalRank", 
                         "PP", 
-                        "Location")
+                        "Location",
+                        "RegistrationDate")
         await write_csv(line, dest, mode="w")
     prev_time = datetime.datetime.now()
-    with open("csvfiles/all_player_ids.csv", "r", newline='', encoding='utf-8') as f:
+    with open("csvfiles/user_data/all_player_ids.csv", "r", newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
         for row in reader:
             i += 1
@@ -181,12 +182,13 @@ async def gather_players(mod):
                                 user_obj.username, 
                                 user_stats.global_rank, 
                                 user_stats.pp,
-                                user_obj.country.name)
+                                user_obj.country.name,
+                                user_obj.join_date)
                     await write_csv(line, dest)
                     if (i%200 == 0):
-                        time = datetime.datetime.now()
-                        print(f"process {mod} id {i} : took {time - prev_time}")
-                        prev_time = time
+                        times = datetime.datetime.now()
+                        print(f"process {mod} id {i} : took {times - prev_time}")
+                        prev_time = times
                 except ValueError:
                     print(f"User {row[0]} not found")
                     break

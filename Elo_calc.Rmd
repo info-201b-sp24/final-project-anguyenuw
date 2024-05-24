@@ -123,11 +123,11 @@ for (i in 150000:214318) {
 # write all user ids found in the dataset
 # used by scraper.py to get player info
 ```{r}
-all_player_ids <- scores_raw %>% 
-  select(User.ID) %>% 
+all_player_ids <- osu_ratings_m3$ratings %>% 
+  select(Player) %>% 
   unique() %>% 
   unlist(use.names = FALSE)
-write.csv(all_player_ids, "csvfiles/all_player_ids.csv", row.names = FALSE)
+write.csv(all_player_ids, "csvfiles/user_data/all_player_ids.csv", row.names = FALSE)
 ```
 
 # compile player data with RME ratings
@@ -142,9 +142,9 @@ player_data <- read.csv("csvfiles/user_data/user_data_0.csv") %>%
 
 # fill in RME ratings
 player_data <- player_data %>%
-  left_join(osu_ratings_m3$ratings, by = join_by(Username == Player)) %>%
+  left_join(osu_ratings_m3$ratings, by = join_by(UserID == Player)) %>%
   mutate(RME = Rating) %>%
-  select(UserID, Username, GlobalRank, PP, RME, Location, Games)
+  select(UserID, Username, GlobalRank, PP, RME, Location, RegistrationDate, Games)
 
 # delete NA values
 # these may happen because a player was banned between 2023 and now
