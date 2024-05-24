@@ -103,7 +103,8 @@ i_ranges <- list(1:99, 100:999, 1000:4999, 5000:9999, 10000:19999, 20000:34999,
                  110000:124999, 125000:149999, 150000:174999, 175000:199999, 200000:214318)
 i_ranges[[length(i_ranges) + 1]] <- (1:length(time_indices$Datetime))
 # i_ranges[[3]]
-for (i in i_ranges[[11]]) {
+# 150000:214318
+for (i in 150000:214318) {
   index = time_indices$Index[i]
   scorevec <- score_history[[index]]
   n <- (length(scorevec) - 1) / 2
