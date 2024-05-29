@@ -3,6 +3,7 @@ library(ggplot2)
 library(flexdashboard)
 library(bslib)
 library(dplyr)
+library(markdown)
 
 setwd("C:/Users/mrche/info201/final-project-anguyenuw")
 
@@ -98,7 +99,7 @@ lb_table <- mainPanel(lb_page_left,
                       lb_page_right,
                       tableOutput('lb_user_tbl'))
 
-#<i class="fa-solid fa-left-long"></i>
+
 
 ui <- page_navbar(
   title = "Rhythm Metrics Elo",
@@ -107,18 +108,18 @@ ui <- page_navbar(
   inverse = TRUE,
   
   # TODO: use includeMarkdown()
-  nav_panel(title = "Homepage", p("Homepage")),
-  nav_panel(title = "RME Leaderboard", 
+  nav_panel(title = "Homepage", includeMarkdown("homepage.md")),
+  nav_panel(title = "Leaderboard", 
             list(sidebarLayout(lb_params_input, lb_table))
   ),
-  nav_panel(title = "Two", p("Second page content.")),
+  nav_panel(title = "RME Distribution", p("RME Distribution")),
   nav_panel(title = "Three", p("Third page content.")),
   nav_spacer(),
   nav_menu(
-    title = "Links",
+    title = "Other",
     align = "right",
-    nav_item(tags$a("Posit", href = "https://posit.co")),
-    nav_item(tags$a("Shiny", href = "https://shiny.posit.co"))
+    nav_item(tags$a("Source code", href = "https://github.com/info-201b-sp24/final-project-anguyenuw")),
+    nav_item(tags$a("Created with Shiny", href = "https://shiny.posit.co"))
   ),
   
   #titlePanel("Diamonds Explorer"),
