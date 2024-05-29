@@ -14,24 +14,24 @@ library("PlayerRatings")
 library("dplyr")
 setwd("C:/Users/mrche/info201/final-project-anguyenuw")
 
-#phase 1 - collect scores
-#  group by map ID, split by groups
-#  list score_history stores inputs to elom
-#  df time_indices stores associations between Datetime 
-#     and entry indices in score_history
-#  for each group -
-#     while there are scores to be processed:
-#       select all scores set on that map in the following 2 weeks.
-#         call this subset map_scores.
-#         delete map_scores from the group.
-#       process into a 1-row dataframe containing timestamp, players, scores
-#       add an entry to score_history with timestamp and matrix
-#       add a row to time_indices with timestamp and latest score_history index
+phase 1 - collect scores
+  group by map ID, split by groups
+  list score_history stores inputs to elom
+  df time_indices stores associations between Datetime 
+     and entry indices in score_history
+  for each group -
+     while there are scores to be processed:
+       select all scores set on that map in the following 2 weeks.
+         call this subset map_scores.
+         delete map_scores from the group.
+       process into a 1-row dataframe containing timestamp, players, scores
+       add an entry to score_history with timestamp and matrix
+       add a row to time_indices with timestamp and latest score_history index
 
-#phase 2 - sort score vectors, calculate elo
-#  sort score history by datetime
-#  iteratively send shards through elom in temporal order
-#    send in batches to reduce memory costs
+phase 2 - sort score vectors, calculate elo
+  sort score history by datetime
+  iteratively send shards through elom in temporal order
+    send in batches to reduce memory costs
 ```{r}
 scores_raw <- read.csv("csvfiles/mp_data/all_mps_0.csv") %>%
           rbind(read.csv("csvfiles/mp_data/all_mps_1.csv")) %>%
@@ -50,7 +50,6 @@ A <- function(x) as.numeric(strptime(x, format="%Y-%m-%d %H:%M:%S", tz="UTC"))
 scores$Datetime <- unlist(lapply(scores$Datetime, A))
 scores <- scores %>% arrange(Datetime)
 
-# expressed in seconds
 # 1209600 seconds = 2 weeks
 time_limit <- 1209600
 
@@ -61,7 +60,7 @@ score_history <- list()
 time_indices <- data.frame(matrix(ncol = 2, nrow = 0))
 colnames(time_indices) <- c("Datetime", "Index")
 
-# phase 1 - collect scores
+# collect scores
 for (map_shard in scores_maps) {
   while (nrow(map_shard) > 0) {
     # get data on the earliest score in the shard
@@ -74,15 +73,12 @@ for (map_shard in scores_maps) {
     map_shard <- map_shard %>%
       filter(Datetime >= time + time_limit)
     
-    # set up input to elom
     n <- nrow(map_scores)
-    
     # skip if only 1 player is found
     if (n==1) next
     
-    #
+    # set up input to elom
     players_and_scores <- data.frame(matrix(ncol = 1 + 2*n, nrow = 0))
-    
     players_and_scores[1, 1] <- time
     players_and_scores[1, 2:(1 + n)] <- map_scores$UserID
     players_and_scores[1, (2 + n):(1 + 2*n)] <- map_scores$Score
@@ -93,7 +89,7 @@ for (map_shard in scores_maps) {
   }
 }
 
-# phase 2 - sort score vectors, calc elo in time order
+# sort score vectors, calc elo in time order
 time_indices <- time_indices %>% arrange(Datetime)
 
 osu_ratings_m3 <- NULL
@@ -104,12 +100,13 @@ i_ranges <- list(1:99, 100:999, 1000:4999, 5000:9999, 10000:19999, 20000:34999,
 i_ranges[[length(i_ranges) + 1]] <- (1:length(time_indices$Datetime))
 # i_ranges[[3]]
 # 150000:214318
+# apply elom
 for (i in 150000:214318) {
   index = time_indices$Index[i]
   scorevec <- score_history[[index]]
   n <- (length(scorevec) - 1) / 2
   base <- seq(30, -30, length.out=n)
-  # apply elom
+  
   osu_ratings_m3 <- elom(scorevec, 
                            nn = n,
                            base = base, 
