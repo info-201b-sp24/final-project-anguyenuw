@@ -45,3 +45,5 @@ csvfiles/mp_data/all_mps_a3.csv
 csvfiles/mp_data/all_mps_a4.csv
 csvfiles/mp_data/all_mps_a5.csv
 csvfiles/mp_data/all_mps_a6.csv
+csvfiles/compiled_sets/Scores.csv
+csvfiles/compiled_sets/Users.csv
