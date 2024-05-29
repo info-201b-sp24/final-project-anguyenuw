@@ -1,5 +1,7 @@
 library(shiny)
 library(ggplot2)
+library(rsconnect)
+library(tidyr)
 
 base_table <- read.csv("csvfiles/user_data/users_with_RME.csv")
 #base_scores <- read.csv("csvfiles/mp_data/cleaned_scores.csv")
@@ -42,17 +44,17 @@ function(input, output) {
       #tbl_start_at <- tbl_start_at - replace_na(as.numeric(input$user_num_rows), 25)))
   # search users in the Users dataset by username (case insensitive) or user ID
   output$lb_user_tbl <- renderTable({ base_table %>%
-                                             # match name/user id
+                                        # match name/user id
                                       filter(grepl(casefold(input$user_lookup), casefold(Username)) | 
                                                (input$user_lookup == "") |
                                                (input$user_lookup == UserID),
-                                             # num global rank within bounds
+                                        # num global rank within bounds
                                              GlobalRank >= input$user_rank_min,
                                              GlobalRank <= input$user_rank_max,
-                                             # num maps played within bounds
+                                        # num maps played within bounds
                                              Games >= input$user_maps_min,
                                              Games <= input$user_maps_max,
-                                             # location matches
+                                        # location matches
                                              (is.null(input$user_locations)) |
                                                (Location %in% input$user_locations)) %>%
                                       mutate("Maps Played" = Games, 
