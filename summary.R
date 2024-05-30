@@ -1,8 +1,8 @@
 library("dplyr")
 library("ggplot2")
-setwd("C:/Users/mrche/info201/exploratory-analysis-anguyenuw")
+#setwd("C:/Users/mrche/info201/exploratory-analysis-anguyenuw")
 
-players <- read.csv("csvfiles/user_data/users_with_RME.csv") %>%
+players <- read.csv("Users.csv") %>%
   filter(Games > 30)
 
 summary_top_5_RME <- players %>%

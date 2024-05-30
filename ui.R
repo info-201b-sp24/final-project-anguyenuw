@@ -169,18 +169,19 @@ ditrib_graphs <- mainPanel(plotOutput("distrib_scatter"), plotOutput("distrib_hi
 ui <- page_navbar(
   title = "Rhythm Metrics Elo",
   theme = shinytheme("cosmo"),
-  #bg = "#2D89C8",
   inverse = TRUE,
   
   nav_panel(title = "Homepage", includeMarkdown("homepage.md")
             ),
-  nav_panel(title = "Leaderboard", h2("Leaderboard"),
+  nav_panel(title = "Leaderboard", h2("RME Leaderboard"), p("Sorting players by their RME ranking will help us answer questions about the highest ranked players in each ranking system."),
             sidebarLayout(lb_params_input, lb_table)
             ),
-  nav_panel(title = "RME Distribution", h2("Distribution of players within the RME system"),
+  nav_panel(title = "RME Distribution", h2("Distribution of players in the RME system"),
             sidebarLayout(distrib_params_input, ditrib_graphs)
             ),
   nav_panel(title = "Three", p("Third page content.")
+            ),
+  nav_panel(title = "Takeaways", includeHTML("takeaways.html")
             ),
   nav_spacer(),
   nav_menu(
@@ -190,7 +191,6 @@ ui <- page_navbar(
     nav_item(tags$a("Created with Shiny", href = "https://shiny.posit.co"))
   ),
   
-  #titlePanel("Diamonds Explorer"),
   
   
 )
