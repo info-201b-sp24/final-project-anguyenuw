@@ -4,10 +4,11 @@ library(flexdashboard)
 library(bslib)
 library(dplyr)
 library(markdown)
+library(shinythemes)
 
-setwd("C:/Users/mrche/info201/final-project-anguyenuw")
+#setwd("C:/Users/mrche/info201/final-project-anguyenuw")
 
-countries <- read.csv("csvfiles/user_data/users_with_RME.csv") %>%
+countries <- read.csv("Users.csv") %>%
   select(Location) %>%
   distinct() %>%
   arrange(Location)
@@ -35,6 +36,7 @@ countries <- read.csv("csvfiles/user_data/users_with_RME.csv") %>%
 #  plotOutput('plot')
 #)
 
+# LEADERBOARD PAGE
 lb_user_input <- textInput("user_lookup", 
                             label = "Player", 
                             value = "", 
@@ -99,21 +101,87 @@ lb_params_input <- sidebarPanel(h3("Search"),
 
 lb_table <- mainPanel(tableOutput('lb_user_tbl'))
 
+# DISTRIBUTIONS PAGE
+distrib_rank_min_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
+                         numericInput("distrib_rank_min",
+                                      label = "Min. rank",
+                                      value = 1,
+                                      min = 1,
+                                      step = 1,
+                                      width = "100%"))
+distrib_rank_max_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
+                         numericInput("distrib_rank_max",
+                                      label = "Max. rank",
+                                      value = 100000,
+                                      min = 1,
+                                      step = 1,
+                                      width = "100%"))
+distrib_rme_min_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
+                              numericInput("distrib_rme_min",
+                                           label = "Min. RME",
+                                           value = 200,
+                                           min = 1,
+                                           step = 1,
+                                           width = "100%"))
+distrib_rme_max_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
+                              numericInput("distrib_rme_max",
+                                           label = "Max. RME",
+                                           value = 3400,
+                                           min = 1,
+                                           step = 1,
+                                           width = "100%"))
+distrib_rank_log_input <- checkboxInput("distrib_rank_log",
+                                        label = "Rank: log plot",
+                                        value = FALSE,
+                                        width = NULL)
+distrib_maps_min_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
+                         numericInput("distrib_maps_min",
+                                      label = "Min. maps played",
+                                      value = 30,
+                                      min = 1,
+                                      step = 1,
+                                      width = "100%"))
+distrib_maps_max_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
+                         numericInput("distrib_maps_max",
+                                      label = "Max. maps played",
+                                      value = 10000,
+                                      min = 1,
+                                      step = 1,
+                                      width = "100%"))
+distrib_location_input <- selectInput(
+  "distrib_locations",
+  "Location(s)",
+  countries,
+  multiple = TRUE,
+  width = "100%")
+empty <- div(style="display: inline-block;vertical-align:middle; width: 5%;", "")
+distrib_params_input <- sidebarPanel(h3("Filter Players"),  
+                                     distrib_rank_min_input, empty, distrib_rank_max_input,
+                                     distrib_rank_log_input,
+                                     distrib_rme_min_input, empty, distrib_rme_max_input,
+                                     distrib_maps_min_input, empty, distrib_maps_max_input,
+                                     distrib_location_input,
+                                width = 3)
+
+ditrib_graphs <- mainPanel(plotOutput("distrib_scatter"), plotOutput("distrib_hist"))
 
 
 ui <- page_navbar(
   title = "Rhythm Metrics Elo",
-  theme = bs_theme(version = 5, bootswatch = "minty"),
+  theme = shinytheme("cosmo"),
   #bg = "#2D89C8",
   inverse = TRUE,
   
-  # TODO: use includeMarkdown()
-  nav_panel(title = "Homepage", includeMarkdown("homepage.md")),
-  nav_panel(title = "Leaderboard", 
-            list(sidebarLayout(lb_params_input, lb_table))
-  ),
-  nav_panel(title = "RME Distribution", p("RME Distribution"), textOutput("yes")),
-  nav_panel(title = "Three", p("Third page content.")),
+  nav_panel(title = "Homepage", includeMarkdown("homepage.md")
+            ),
+  nav_panel(title = "Leaderboard", h2("Leaderboard"),
+            sidebarLayout(lb_params_input, lb_table)
+            ),
+  nav_panel(title = "RME Distribution", h2("Distribution of players within the RME system"),
+            sidebarLayout(distrib_params_input, ditrib_graphs)
+            ),
+  nav_panel(title = "Three", p("Third page content.")
+            ),
   nav_spacer(),
   nav_menu(
     title = "Other",
