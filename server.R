@@ -146,6 +146,24 @@ function(input, output) {
     
   })
   
+  output$scores_graph <- renderPlot({
+    players_set <- input$scores_users
+    scoress <- base_scores %>%
+      filter(Score > 100, 
+             Score < 1300000,
+             (Username %in% players_set) | (length(players_set) == 0))
+    hist <- ggplot(scoress, aes(x = Score)) + geom_histogram(binwidth = 10000, colour = "black", fill = "lightblue") 
+    hist <- hist + labs(title="Score distribution", 
+                                          subtitle=paste(players_set, 
+                                                         collapse = ", "), 
+                                          y="Number of scores", 
+                                          x="Score") +
+      theme(text = element_text(size = 15)) + 
+      scale_x_continuous(labels = scales::comma) +
+      scale_y_continuous(labels = scales::comma)
+    hist
+  })
+  
   
   #output$
   

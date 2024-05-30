@@ -1,6 +1,6 @@
 ---
 title: "Takeaways"
-output: html_document
+output: html_fragment
 ---
 ```{r setup, include=FALSE}
 library(knitr)
@@ -54,7 +54,7 @@ kable(table_display2) %>%
   kable_styling(bootstrap_options = "striped", full_width = FALSE)
 ```
 
-We can see that, for all countries, their Average RME hovers within 200 points of the average RME of all active players (`r mean_RME %>% round(digits=1)`). Also, most countries have at least one player in the top 100 RME rankings. This suggests that geographic location has little impact on a player's performance in tournaments.
+We can see that, for all countries, their Average RME hovers within 100 points of the average RME of all active players (`r mean_RME %>% round(digits=1)`). Also, most countries have at least one player in the top 100 RME rankings. This suggests that geographic location has little impact on a player's performance in tournaments.
 
 ## Conclusion
 

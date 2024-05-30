@@ -8,11 +8,16 @@ library(shinythemes)
 
 #setwd("C:/Users/mrche/info201/final-project-anguyenuw")
 
-countries <- read.csv("Users.csv") %>%
+userss <- read.csv("Users.csv")
+countries <- userss %>%
   select(Location) %>%
   distinct() %>%
   arrange(Location)
   
+players_select <- userss %>%
+  select(Username) %>%
+  distinct() %>%
+  arrange(Username)
 
 
 #p_1 <- sidebarPanel(
@@ -166,6 +171,17 @@ distrib_params_input <- sidebarPanel(h3("Filter Players"),
 ditrib_graphs <- mainPanel(plotOutput("distrib_scatter"), plotOutput("distrib_hist"))
 
 
+# SCORE HISTOGRAM
+scores_user_input <- selectInput(
+          "scores_users",
+          "Select user(s) (default: all users)",
+          players_select,
+          multiple = TRUE,
+          width = "100%")
+scores_params_input <- sidebarPanel(h3("Filter Players"), 
+                                    scores_user_input)
+scores_graph <- mainPanel(plotOutput("scores_graph"))
+
 ui <- page_navbar(
   title = "Rhythm Metrics Elo",
   theme = shinytheme("cosmo"),
@@ -173,15 +189,22 @@ ui <- page_navbar(
   
   nav_panel(title = "Homepage", includeMarkdown("homepage.md")
             ),
-  nav_panel(title = "Leaderboard", h2("RME Leaderboard"), p("Sorting players by their RME ranking will help us answer questions about the highest ranked players in each ranking system."),
+  nav_panel(title = "Leaderboard", 
+            h2("RME Leaderboard"), 
+            p("Sorting players by their RME ranking will help us answer questions about the highest ranked players in each ranking system. Note that players start with 1500 RME, so players with very few maps played (under 30) might have an inaccurate rating close to 1500 RME."),
             sidebarLayout(lb_params_input, lb_table)
             ),
-  nav_panel(title = "RME Distribution", h2("Distribution of players in the RME system"),
+  nav_panel(title = "RME Distribution", 
+            h2("Distribution of players in the RME system"),
+            p("Comparing players' official rankings vs RME ratings reveals clear trends between a player's rank and their overall tournament skill."),
             sidebarLayout(distrib_params_input, ditrib_graphs)
             ),
-  nav_panel(title = "Three", p("Third page content.")
-            ),
-  nav_panel(title = "Takeaways", includeHTML("takeaways.html")
+  nav_panel(title = "Score Distribution", 
+            p("Analyzing the distribution of scores of multiple players can show us how individual players perform in tournaments."),
+            h2("Distribution of scores by selected players"),
+            sidebarLayout(scores_params_input, scores_graph)
+           ),
+  nav_panel(title = "Takeaways", includeHTML("./takeaways.html")
             ),
   nav_spacer(),
   nav_menu(
@@ -189,10 +212,7 @@ ui <- page_navbar(
     align = "right",
     nav_item(tags$a("Source code", href = "https://github.com/info-201b-sp24/final-project-anguyenuw")),
     nav_item(tags$a("Created with Shiny", href = "https://shiny.posit.co"))
-  ),
-  
-  
-  
+  )
 )
 
 
