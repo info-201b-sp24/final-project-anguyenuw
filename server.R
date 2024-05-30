@@ -2,11 +2,11 @@ library(shiny)
 library(ggplot2)
 library(rsconnect)
 library(tidyr)
-
-base_table <- read.csv("csvfiles/user_data/users_with_RME.csv")
-#base_scores <- read.csv("csvfiles/mp_data/cleaned_scores.csv")
+library(vroom)
+setwd("C:/Users/mrche/info201/final-project-anguyenuw")
+base_users <- vroom("csvfiles/Users.csv", col_types = "iciddicTi")
+base_scores <- vroom("csvfiles/Scores.csv", col_types = "icTiicci")
 tbl_start_at <- 1
-
 function(input, output) {
   
   dataset <- reactive({
@@ -34,16 +34,9 @@ function(input, output) {
   }, height=700)
   
   
-  eventReactive(
-    (input$user_pleft),
-    (tbl_start_at <- tbl_start_at + replace_na(as.numeric(input$user_num_rows), 25)))
-  
-  eventReactive(
-    (input$user_pright),
-    (stop("help")))
-      #tbl_start_at <- tbl_start_at - replace_na(as.numeric(input$user_num_rows), 25)))
   # search users in the Users dataset by username (case insensitive) or user ID
-  output$lb_user_tbl <- renderTable({ base_table %>%
+  output$lb_user_tbl <- renderTable({
+                                      base_users %>%
                                         # match name/user id
                                       filter(grepl(casefold(input$user_lookup), casefold(Username)) | 
                                                (input$user_lookup == "") |
@@ -59,17 +52,27 @@ function(input, output) {
                                                (Location %in% input$user_locations)) %>%
                                       mutate("Maps Played" = Games, 
                                              "RME Rank" = RMERanking, 
-                                             "Rank" = GlobalRank,
+                                             "pp Rank" = GlobalRank,
                                              "pp" = PP) %>%
-                                      select("RME Rank", Username, RME, "Rank", "pp", "Maps Played", Location) %>%
+                                      select("RME Rank", Username, RME, "pp Rank", "pp", "Maps Played", Location) %>%
       
-                                      slice(1:(n = replace_na(as.numeric(input$user_num_rows), 25)))},
+                                      slice((max(min(
+                                                (input$user_page - 1) * replace_na(as.numeric(input$user_num_rows), 25) + 1, 
+                                                nrow(base_users)+1), 1)):
+                                            (max(min(
+                                                (input$user_page) * replace_na(as.numeric(input$user_num_rows), 25), 
+                                                nrow(base_users)+1), 1))
+                                            )
+                            },
                                       #head(n = replace_na(as.numeric(input$user_num_rows), 25)) },  
-                            striped = TRUE,  
-                            spacing = 'xs', 
+                            striped = TRUE,
+                            spacing = 'xs',
                             digits = 1,
                             align = 'l',
+                            hover = TRUE,
                             width = '100%')
+  
+  #output$
   
   
   

@@ -40,11 +40,20 @@ lb_user_input <- textInput("user_lookup",
                             value = "", 
                             placeholder = "Name or ID",
                             width = "100%")
-lb_num_rows_input <- selectInput("user_num_rows", 
-                            label = "Number of players to display", 
+lb_num_rows_input <- div(style="display: inline-block;vertical-align:bottom; width: 45%;",
+                         selectInput("user_num_rows", 
+                            label = "Players per page", 
                             c(25, 50, 100, 250, 500), 
-                            selected = 25, 
-                            width = "45%")
+                            selected = 25,
+                            width = "100%"))
+lb_page_input <- div(style="display: inline-block;vertical-align:bottom; width: 45%;",
+                     numericInput("user_page",
+                            label = "Page",
+                            value = 1,
+                            min = 1,
+                            max = 1000,
+                            step = 1,
+                            width = "100%"))
 lb_rank_min_input <- div(style="display: inline-block;vertical-align:middle; width: 45%;", 
                          numericInput("user_rank_min",
                             label = "Min. rank",
@@ -80,24 +89,15 @@ lb_location_input <- selectInput(
                             multiple = TRUE,
                             width = "100%")
 empty <- div(style="display: inline-block;vertical-align:middle; width: 5%;", "")
-lb_params_input <- sidebarPanel(h3("Search parameters"), 
+lb_params_input <- sidebarPanel(h3("Search"), 
                           lb_user_input, 
-                          lb_num_rows_input, 
+                          lb_num_rows_input, empty, lb_page_input,
                           lb_rank_min_input, empty, lb_rank_max_input,
                           lb_maps_min_input, empty, lb_maps_max_input,
                           lb_location_input,
                           width = 3)
-lb_page_left <- actionButton("user_pleft",
-                             label = "",
-                             icon = icon("left-long"),
-                             width = "100px")
-lb_page_right <- actionButton("user_pright",
-                              label = "",
-                              icon = icon("right-long"),
-                              width = "100px")
-lb_table <- mainPanel(lb_page_left,
-                      lb_page_right,
-                      tableOutput('lb_user_tbl'))
+
+lb_table <- mainPanel(tableOutput('lb_user_tbl'))
 
 
 
@@ -112,7 +112,7 @@ ui <- page_navbar(
   nav_panel(title = "Leaderboard", 
             list(sidebarLayout(lb_params_input, lb_table))
   ),
-  nav_panel(title = "RME Distribution", p("RME Distribution")),
+  nav_panel(title = "RME Distribution", p("RME Distribution"), textOutput("yes")),
   nav_panel(title = "Three", p("Third page content.")),
   nav_spacer(),
   nav_menu(
